@@ -54,7 +54,7 @@ class UnpackerTest {
   }
 
   @Test
-  public void checkNumbersBeforeBrackets_() {
+  public void checkNumbersBeforeBrackets_bracketsInARow() {
 	unpacker.setInputString("3[хyz][xy]zabs4[assd2[aas]");
 	Assertions.assertThrows(IllegalArgumentException.class, unpacker.getValidator()::checkNumbersBeforeBrackets);
   }
@@ -62,6 +62,12 @@ class UnpackerTest {
   @Test
   public void checkNumbersBeforeBrackets_nestedBracketsWithoutNumber() {
 	unpacker.setInputString("3[хyz]3[xy]zabs4[as[a]sd2[aas]");
+	Assertions.assertThrows(IllegalArgumentException.class, unpacker.getValidator()::checkNumbersBeforeBrackets);
+  }
+
+  @Test
+  public void checkNumbersBeforeBrackets_zeroTimesToRepeat() {
+	unpacker.setInputString("3[хyz]3[xy]zabs4[as0[a]sd2[aas]");
 	Assertions.assertThrows(IllegalArgumentException.class, unpacker.getValidator()::checkNumbersBeforeBrackets);
   }
 }

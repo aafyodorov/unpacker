@@ -73,6 +73,9 @@ public class Unpacker {
           if (matcher.group(1).length() == 0) {
             throw new IllegalArgumentException("Number must precede square brackets");
           }
+          if (Integer.parseInt(matcher.group(1)) == 0) {
+            throw new IllegalArgumentException("The number of repetitions must be greater than zero");
+          }
         }
       }
     }
