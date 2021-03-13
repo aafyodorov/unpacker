@@ -24,8 +24,14 @@ class UnpackerTest {
   }
 
   @Test
-  public void checkValidChars_containPoint() {
-	unpacker.setInputString("3[xyz]4[x.y]z");
+  public void checkValidChars_containUnderline() {
+	unpacker.setInputString("3[xy3[ab]z]4[x_y]z");
+	Assertions.assertThrows(IllegalArgumentException.class, unpacker.getValidator()::checkValidChars);
+  }
+
+  @Test
+  public void checkValidChars_containUmlaut() {
+	unpacker.setInputString("3[xy3[ab]z]4[xüy]z");
 	Assertions.assertThrows(IllegalArgumentException.class, unpacker.getValidator()::checkValidChars);
   }
 
@@ -34,6 +40,7 @@ class UnpackerTest {
 	unpacker.setInputString("3][хyz]4[xy]z");
 	Assertions.assertThrows(IllegalArgumentException.class, unpacker.getValidator()::checkBrackets);
   }
+
 
   @Test
   public void checkBrackets_endWithOpenBracket() {
@@ -69,5 +76,11 @@ class UnpackerTest {
   public void checkNumbersBeforeBrackets_zeroTimesToRepeat() {
 	unpacker.setInputString("3[хyz]3[xy]zabs4[as0[a]sd2[aas]");
 	Assertions.assertThrows(IllegalArgumentException.class, unpacker.getValidator()::checkNumbersBeforeBrackets);
+  }
+
+  @Test
+  public void unpackValidNested() {
+    unpacker.setInputString("3[x2[y]]");
+	System.out.println(unpacker.unpack());
   }
 }

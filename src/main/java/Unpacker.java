@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 public class Unpacker {
 
+  private static final Pattern PAT_BRACKETS = Pattern.compile("(\\d+)\\[([^\\[]*?)]");
   private String inputString;
   private Validator validator;
 
@@ -32,6 +33,51 @@ public class Unpacker {
     return validator;
   }
 
+  public String unpack() {
+    Pattern patLetters = Pattern.compile("[a-zA-Z]+");
+    String inputCopy = inputString;
+    StringBuilder unpacked = new StringBuilder();
+    Matcher tmpMatcher;
+    String tmp;
+
+    while (!inputCopy.isEmpty()) {
+      if(inputCopy.startsWith("[a-zA-Z]")) {
+        tmpMatcher = patLetters.matcher(inputCopy);
+        if (tmpMatcher.find()) {
+          throw new RuntimeException("It's impossible");
+        }
+        tmp = tmpMatcher.group();
+        unpacked.append(tmp);
+        inputCopy = inputCopy.substring(tmp.length());
+      } else {
+        unpack(inputCopy);
+        unpacked.append(inputCopy);
+      }
+    }
+    return unpacked.toString();
+  }
+
+  //TODO is possible if(!matcher.find()) ???
+  private void unpack(String input) {
+    if (/*input.isEmpty() || */input.startsWith("//d")) {
+      return /*input*/;
+    }
+    Matcher matcher = PAT_BRACKETS.matcher(input);
+    if (!matcher.find()) {
+      return;
+//      throw new RuntimeException();
+    }
+    String tmp = matcher.group(2);
+    int times = Integer.parseInt(matcher.group(1));
+//    System.out.println(tmp.repeat(times));
+//    System.out.println(matcher.group(0));
+    System.out.print(input + "\t");
+
+    input = input.replace(matcher.group(0), tmp.repeat(times));
+    System.out.println(input);
+    unpack(input);
+  }
+
   class Validator {
 
     public void validate() {
@@ -41,8 +87,9 @@ public class Unpacker {
     }
 
     protected void checkValidChars() {
-        if (inputString.matches(".*[^\\w\\[\\]].*")) {
-          throw new IllegalArgumentException("Input string must contain only Latin letters, numbers and box brackets.");
+        if (inputString.matches(".*[^\\da-zA-Z\\[\\]].*")) {
+          throw new IllegalArgumentException("Input string must contain only Latin letters, positive numbers and box " +
+              "brackets.");
         }
       }
 
