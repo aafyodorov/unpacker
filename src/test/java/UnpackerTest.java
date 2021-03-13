@@ -79,8 +79,14 @@ class UnpackerTest {
   }
 
   @Test
-  public void unpackValidNested() {
-    unpacker.setInputString("3[x2[y]]");
-	System.out.println(unpacker.unpack());
+  public void unpackValid_caseFromTask_1() {
+	unpacker.setInputString("3[xyz]4[xy]z");
+	Assertions.assertEquals("xyzxyzxyzxyxyxyxyz", unpacker.unpack());
+  }
+
+  @Test
+  public void unpackValid_caseFromTask_2() {
+    unpacker.setInputString("2[3[x]y]");
+    Assertions.assertEquals("xxxyxxxy", unpacker.unpack());
   }
 }

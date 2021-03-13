@@ -25,8 +25,8 @@ public class Unpacker {
     return inputString;
   }
 
-  public void setInputString(String inputString) {
-    this.inputString = inputString;
+  public void setInputString(String target) {
+    this.inputString = target;
   }
 
   public Validator getValidator() {
@@ -34,48 +34,40 @@ public class Unpacker {
   }
 
   public String unpack() {
-    Pattern patLetters = Pattern.compile("[a-zA-Z]+");
-    String inputCopy = inputString;
+    Pattern patLetters = Pattern.compile("^[a-zA-Z]+");
+    StringBuilder inputSB = new StringBuilder(inputString);
     StringBuilder unpacked = new StringBuilder();
     Matcher tmpMatcher;
     String tmp;
 
-    while (!inputCopy.isEmpty()) {
-      if(inputCopy.startsWith("[a-zA-Z]")) {
-        tmpMatcher = patLetters.matcher(inputCopy);
-        if (tmpMatcher.find()) {
-          throw new RuntimeException("It's impossible");
-        }
+    while (!inputSB.isEmpty()) {
+      tmpMatcher = patLetters.matcher(inputSB);
+      if (tmpMatcher.find()) {
         tmp = tmpMatcher.group();
         unpacked.append(tmp);
-        inputCopy = inputCopy.substring(tmp.length());
+        int start = inputSB.indexOf(tmp);
+        inputSB.delete(start, start + tmp.length());
       } else {
-        unpack(inputCopy);
-        unpacked.append(inputCopy);
+        unpack(inputSB);
       }
     }
     return unpacked.toString();
   }
 
-  //TODO is possible if(!matcher.find()) ???
-  private void unpack(String input) {
-    if (/*input.isEmpty() || */input.startsWith("//d")) {
-      return /*input*/;
+  //TODO delete or change first if
+  private void unpack(StringBuilder src) {
+    if (src.toString().startsWith("//d")) {
+      return ;
     }
-    Matcher matcher = PAT_BRACKETS.matcher(input);
+    Matcher matcher = PAT_BRACKETS.matcher(src);
     if (!matcher.find()) {
       return;
-//      throw new RuntimeException();
     }
     String tmp = matcher.group(2);
     int times = Integer.parseInt(matcher.group(1));
-//    System.out.println(tmp.repeat(times));
-//    System.out.println(matcher.group(0));
-    System.out.print(input + "\t");
-
-    input = input.replace(matcher.group(0), tmp.repeat(times));
-    System.out.println(input);
-    unpack(input);
+    int start = src.indexOf(matcher.group(0));
+    int end = start + matcher.group(0).length();
+    src.replace(start, end, tmp.repeat(times));
   }
 
   class Validator {
