@@ -34,6 +34,7 @@ public class Unpacker {
   }
 
   public String unpack() {
+    validator.validate();
     Pattern patLetters = Pattern.compile("^[a-zA-Z]+");
     StringBuilder inputSB = new StringBuilder(inputString);
     StringBuilder unpacked = new StringBuilder();
@@ -105,18 +106,24 @@ public class Unpacker {
       }
 
       protected void checkNumbersBeforeBrackets() {
-        Pattern pattern = Pattern.compile("(\\d*)(\\[)");
-        Matcher matcher = pattern.matcher(inputString);
+        Pattern patNumBeforeBracket = Pattern.compile("(\\d*)(\\[)");
+        Matcher matNumBeforeBracket = patNumBeforeBracket.matcher(inputString);
+        Pattern patBracketAfterNum = Pattern.compile("(\\d+)(.?)");
+        Matcher matBracketAfterNum = patBracketAfterNum.matcher(inputString);
+        boolean matFind1, matFind2;
 
-        while (matcher.find()) {
-          if (matcher.group(1).length() == 0) {
+        while ((matFind1 = matNumBeforeBracket.find()) |
+            (matFind2 = matBracketAfterNum.find())) {
+          if (matFind1 ^ matFind2 || !matBracketAfterNum.group(2).equals("[") ||
+              matNumBeforeBracket.group(1).length() == 0) {
             throw new IllegalArgumentException("Number must precede square brackets");
           }
-          if (Integer.parseInt(matcher.group(1)) == 0) {
+          else if (Integer.parseInt(matNumBeforeBracket.group(1)) == 0) {
             throw new IllegalArgumentException("The number of repetitions must be greater than zero");
           }
         }
       }
-    }
+
+  }
 
 }
