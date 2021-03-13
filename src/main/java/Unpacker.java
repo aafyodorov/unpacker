@@ -10,14 +10,12 @@ public class Unpacker {
 
   private static final Pattern PAT_BRACKETS = Pattern.compile("(\\d+)\\[([^\\[]*?)]");
   private String inputString;
-  private final Validator validator;
 
   public Unpacker() {
-    validator = new Validator();
   }
 
-
   public void setInputString(String target) {
+    Validator.validate(target);
     this.inputString = target;
   }
 
@@ -43,7 +41,6 @@ public class Unpacker {
   }
 
   private void unpackRecursionRegEx(StringBuilder src) {
-    validator.validate();
     Matcher matcher = PAT_BRACKETS.matcher(src);
     if (!matcher.find()) {
       return;
@@ -56,7 +53,6 @@ public class Unpacker {
   }
 
   public String unpackIterative() {
-    validator.validate();
     StringBuilder unpacked = new StringBuilder(inputString);
     int closeBracket;
     int openBracket;
@@ -78,62 +74,6 @@ public class Unpacker {
       unpacked.replace(startNbr, closeBracket + 1, pattern.repeat(times));
     }
     return unpacked.toString();
-  }
-
-  class Validator {
-
-    public void validate() {
-      checkValidChars();
-      checkBrackets();
-      checkNumbersBeforeBrackets();
-    }
-
-    protected void checkValidChars() {
-        if (inputString.matches(".*[^\\da-zA-Z\\[\\]].*")) {
-          throw new IllegalArgumentException("Input string must contain only Latin letters, positive numbers and box " +
-              "brackets.");
-        }
-      }
-
-      protected void checkBrackets() {
-        int balance = 0;
-
-        for (int i = 0; i < inputString.length(); i++) {
-          if (inputString.charAt(i) == '[') {
-            ++balance;
-          } else if (inputString.charAt(i) == ']') {
-            --balance;
-            if (balance < 0 ) {
-              throw new IllegalArgumentException("Invalid bracket in input string at: " + (i + 1));
-            }
-          }
-        }
-
-        if (balance > 0) {
-          throw new IllegalArgumentException("Unbalanced brackets");
-        }
-      }
-
-      protected void checkNumbersBeforeBrackets() {
-        Pattern patNumBeforeBracket = Pattern.compile("(\\d*)(\\[)");
-        Matcher matNumBeforeBracket = patNumBeforeBracket.matcher(inputString);
-        Pattern patBracketAfterNum = Pattern.compile("(\\d+)(.?)");
-        Matcher matBracketAfterNum = patBracketAfterNum.matcher(inputString);
-        boolean matFind1, matFind2;
-
-        while ((matFind1 = matNumBeforeBracket.find()) |
-            (matFind2 = matBracketAfterNum.find())) {
-          if (matFind1 ^ matFind2 ||
-              !matBracketAfterNum.group(2).equals("[") ||
-              matNumBeforeBracket.group(1).length() == 0) {
-            throw new IllegalArgumentException("Number must precede square brackets");
-          }
-          else if (Integer.parseInt(matNumBeforeBracket.group(1)) == 0) {
-            throw new IllegalArgumentException("The number of repetitions must be greater than zero");
-          }
-        }
-      }
-
   }
 
 }

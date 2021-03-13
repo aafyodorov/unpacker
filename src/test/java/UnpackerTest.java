@@ -69,8 +69,7 @@ class UnpackerTest {
 //	invalidCases.add("");
 
 	for (String invalidCase : invalidCases) {
-	  unpacker.setInputString(invalidCase);
-	  Assertions.assertThrows(IllegalArgumentException.class, unpacker::unpackRecursionRegEx);
+	  Assertions.assertThrows(IllegalArgumentException.class, () -> unpacker.setInputString(invalidCase));
 	}
   }
 }
