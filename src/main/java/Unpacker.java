@@ -21,8 +21,7 @@ public class Unpacker {
     this.inputString = target;
   }
 
-  public String unpack() {
-    validator.validate();
+  public String unpackRecursionRegEx() {
     Pattern patLetters = Pattern.compile("^[a-zA-Z]+");
     StringBuilder inputSB = new StringBuilder(inputString);
     StringBuilder unpacked = new StringBuilder();
@@ -37,14 +36,14 @@ public class Unpacker {
         int start = inputSB.indexOf(tmp);
         inputSB.delete(start, start + tmp.length());
       } else {
-        unpack(inputSB);
+        unpackRecursionRegEx(inputSB);
       }
     }
     return unpacked.toString();
   }
 
-  private void unpack(StringBuilder src) {
-
+  private void unpackRecursionRegEx(StringBuilder src) {
+    validator.validate();
     Matcher matcher = PAT_BRACKETS.matcher(src);
     if (!matcher.find()) {
       return;
@@ -54,6 +53,31 @@ public class Unpacker {
     int start = src.indexOf(matcher.group(0));
     int end = start + matcher.group(0).length();
     src.replace(start, end, tmp.repeat(times));
+  }
+
+  public String unpackIterative() {
+    validator.validate();
+    StringBuilder unpacked = new StringBuilder(inputString);
+    int closeBracket;
+    int openBracket;
+    int startNbr;
+
+    while ((closeBracket = unpacked.indexOf("]")) != -1) {
+      int tmp;
+      openBracket = -1;
+      while ((tmp = unpacked.indexOf("[", openBracket + 1)) < closeBracket && tmp != -1) {
+        openBracket = tmp;
+      }
+      startNbr = openBracket - 1;
+      while (startNbr >= 0 && Character.isDigit(unpacked.charAt(startNbr))) {
+        --startNbr;
+      }
+      ++startNbr;
+      int times = Integer.parseInt(unpacked.substring(startNbr, openBracket));
+      String pattern = unpacked.substring(openBracket + 1, closeBracket);
+      unpacked.replace(startNbr, closeBracket + 1, pattern.repeat(times));
+    }
+    return unpacked.toString();
   }
 
   class Validator {

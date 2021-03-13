@@ -11,14 +11,12 @@ class UnpackerTest {
 
   static Unpacker unpacker;
 
+  static Map<String, String> validCases = new HashMap<>();
+
   @BeforeAll
   static void init() {
 	unpacker = new Unpacker();
-  }
 
-  @Test
-  public void unpack_validCases() {
-	Map<String, String> validCases = new HashMap<>();
 	validCases.put("3[xyz]4[xy]z", "xyzxyzxyzxyxyxyxyz");
 	validCases.put("2[3[x]y]", "xxxyxxxy");
 	validCases.put("", "");
@@ -31,11 +29,23 @@ class UnpackerTest {
 	validCases.put("xyz12[ab]", "xyz" + "ab".repeat(12));
 	validCases.put("12[ab]xyz", "ab".repeat(12) + "xyz");
 	validCases.put("xyz12[ab]xyz", "xyz" + "ab".repeat(12) + "xyz");
-//	validCases.put("", "");
+	//	validCases.put("", "");
+  }
 
+  @Test
+  public void unpackRecursionRegEx_validCases() {
 	for (Map.Entry<String, String> stringStringEntry : validCases.entrySet()) {
 	  unpacker.setInputString(stringStringEntry.getKey());
-	  Assertions.assertEquals(stringStringEntry.getValue(), unpacker.unpack());
+	  Assertions.assertEquals(stringStringEntry.getValue(), unpacker.unpackRecursionRegEx());
+	}
+  }
+
+  @Test
+  public void unpackIterative_validCases() {
+	for (Map.Entry<String, String> stringStringEntry : validCases.entrySet()) {
+	  unpacker.setInputString(stringStringEntry.getKey());
+	  unpacker.unpackIterative();
+	  Assertions.assertEquals(stringStringEntry.getValue(), unpacker.unpackIterative());
 	}
   }
 
@@ -60,7 +70,7 @@ class UnpackerTest {
 
 	for (String invalidCase : invalidCases) {
 	  unpacker.setInputString(invalidCase);
-	  Assertions.assertThrows(IllegalArgumentException.class, unpacker::unpack);
+	  Assertions.assertThrows(IllegalArgumentException.class, unpacker::unpackRecursionRegEx);
 	}
   }
 }
