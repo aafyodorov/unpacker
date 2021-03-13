@@ -10,27 +10,15 @@ public class Unpacker {
 
   private static final Pattern PAT_BRACKETS = Pattern.compile("(\\d+)\\[([^\\[]*?)]");
   private String inputString;
-  private Validator validator;
+  private final Validator validator;
 
   public Unpacker() {
     validator = new Validator();
   }
 
-  public Unpacker(String inputString) {
-    this();
-    this.inputString = inputString;
-  }
-
-  public String getInputString() {
-    return inputString;
-  }
 
   public void setInputString(String target) {
     this.inputString = target;
-  }
-
-  public Validator getValidator() {
-    return validator;
   }
 
   public String unpack() {
@@ -55,11 +43,8 @@ public class Unpacker {
     return unpacked.toString();
   }
 
-  //TODO delete or change first if
   private void unpack(StringBuilder src) {
-    if (src.toString().startsWith("//d")) {
-      return ;
-    }
+
     Matcher matcher = PAT_BRACKETS.matcher(src);
     if (!matcher.find()) {
       return;
@@ -114,7 +99,8 @@ public class Unpacker {
 
         while ((matFind1 = matNumBeforeBracket.find()) |
             (matFind2 = matBracketAfterNum.find())) {
-          if (matFind1 ^ matFind2 || !matBracketAfterNum.group(2).equals("[") ||
+          if (matFind1 ^ matFind2 ||
+              !matBracketAfterNum.group(2).equals("[") ||
               matNumBeforeBracket.group(1).length() == 0) {
             throw new IllegalArgumentException("Number must precede square brackets");
           }
