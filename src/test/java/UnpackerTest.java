@@ -2,9 +2,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 class UnpackerTest {
@@ -36,7 +34,7 @@ class UnpackerTest {
   public void unpackRecursionRegEx_validCases() {
 	for (Map.Entry<String, String> stringStringEntry : validCases.entrySet()) {
 	  unpacker.setInputString(stringStringEntry.getKey());
-	  Assertions.assertEquals(stringStringEntry.getValue(), unpacker.unpackRecursionRegEx());
+	  Assertions.assertEquals(stringStringEntry.getValue(), unpacker.unpackRecursion());
 	}
   }
 
@@ -49,27 +47,4 @@ class UnpackerTest {
 	}
   }
 
-  @Test
-  public void unpack_invalidCases() {
-	List<String> invalidCases = new ArrayList<>();
-	invalidCases.add("2");
-	invalidCases.add("[xy]");
-	invalidCases.add("0[xy]");
-	invalidCases.add("3[хyz]4[xy]z");			//Cyrillic 'x'
-	invalidCases.add("3[xy3[ab]z]4[x_y]z");
-	invalidCases.add("3[xy3[ab]z]4[xüy]z");
-	invalidCases.add("3][хyz]4[xy]z");
-	invalidCases.add("3][хyz]4[xy]z");
-	invalidCases.add("3[хyz]4[xy][z");
-	invalidCases.add("3[хy[[z]4[xy]z");
-	invalidCases.add("3[хyz]4[xy]zabs4[assd2[aas]");
-	invalidCases.add("3[хyz][xy]zabs4[assd2[aas]");
-	invalidCases.add("3[хyz]3[xy]zabs4[as[a]sd2[aas]");
-	invalidCases.add("3[хyz]3[xy]zabs4[as0[a]sd2[aas]");
-//	invalidCases.add("");
-
-	for (String invalidCase : invalidCases) {
-	  Assertions.assertThrows(IllegalArgumentException.class, () -> unpacker.setInputString(invalidCase));
-	}
-  }
 }

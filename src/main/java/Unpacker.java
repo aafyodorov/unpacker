@@ -14,12 +14,20 @@ public class Unpacker {
   public Unpacker() {
   }
 
+  public Unpacker(String inputString) {
+    setInputString(inputString);
+  }
+
   public void setInputString(String target) {
     Validator.validate(target);
     this.inputString = target;
   }
 
-  public String unpackRecursionRegEx() {
+  public String getInputString() {
+    return inputString;
+  }
+
+  public String unpackRecursion() {
     Pattern patLetters = Pattern.compile("^[a-zA-Z]+");
     StringBuilder inputSB = new StringBuilder(inputString);
     StringBuilder unpacked = new StringBuilder();
@@ -34,13 +42,13 @@ public class Unpacker {
         int start = inputSB.indexOf(tmp);
         inputSB.delete(start, start + tmp.length());
       } else {
-        unpackRecursionRegEx(inputSB);
+        unpackRecursion(inputSB);
       }
     }
     return unpacked.toString();
   }
 
-  private void unpackRecursionRegEx(StringBuilder src) {
+  private void unpackRecursion(StringBuilder src) {
     Matcher matcher = PAT_BRACKETS.matcher(src);
     if (!matcher.find()) {
       return;

@@ -28,3 +28,10 @@
 
 Исходные коды выложить на GitHub или прислать по e-mail. Ссылки на GitHub и файлы с решением присылать на e-mail, 
 указанный в письме с подтверждением регистрации на курс.
+
+## Solution:
+
+Test task was solved in two ways: recursive and iterative. <br>
+Class Unpacker contains two public methods `unpackRecursion()` and `unpackIterative()`, which unpack the input string 
+recursive or iterative accordingly. Method `Validator.validate()` validates resulting string. <br>
+All test are in the `src/main/test/java`.
